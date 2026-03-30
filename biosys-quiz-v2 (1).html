@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biosys — Find Your Natural Reset Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060a0f;
+    --surface: #0d1520;
+    --surface2: #111d2e;
+    --accent: #00e5a0;
+    --accent2: #00b8d4;
+    --text: #e8f4f0;
+    --text-muted: #6b8a7a;
+    --border: rgba(0,229,160,0.15);
+    --glow: 0 0 40px rgba(0,229,160,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+  body::before {
+    content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(ellipse at 20% 20%,rgba(0,229,160,0.04) 0%,transparent 50%),
+                radial-gradient(ellipse at 80% 80%,rgba(0,184,212,0.04) 0%,transparent 50%);
+    pointer-events:none; z-index:0;
+  }
+  .container { max-width:640px; margin:0 auto; padding:24px 20px 60px; position:relative; z-index:1; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:48px; opacity:0; animation:fadeUp 0.6s ease forwards; }
+  .brand-icon { width:36px; height:36px; }
+  .brand-name { font-family:'DM Serif Display',serif; font-size:20px; letter-spacing:0.05em; color:var(--accent); }
+  .progress-wrap { margin-bottom:40px; opacity:0; animation:fadeUp 0.6s ease 0.1s forwards; }
+  .progress-label { display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+  .progress-track { height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:2px; transition:width 0.5s cubic-bezier(0.4,0,0.2,1); box-shadow:0 0 12px rgba(0,229,160,0.5); }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px 28px; box-shadow:var(--glow); opacity:0; animation:fadeUp 0.6s ease 0.2s forwards; }
+  .q-num { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); margin-bottom:16px; font-weight:500; }
+  .q-text { font-family:'DM Serif Display',serif; font-size:24px; line-height:1.35; color:var(--text); margin-bottom:32px; }
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .option { display:flex; align-items:center; gap:14px; padding:16px 18px; background:var(--surface2); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s ease; text-align:left; color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:400; line-height:1.4; width:100%; }
+  .option:hover { border-color:rgba(0,229,160,0.4); background:rgba(0,229,160,0.05); transform:translateX(4px); }
+  .option.selected { border-color:var(--accent); background:rgba(0,229,160,0.08); color:var(--accent); }
+  .dot { width:18px; height:18px; border-radius:50%; border:1.5px solid var(--text-muted); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; }
+  .option.selected .dot { border-color:var(--accent); background:var(--accent); }
+  .option.selected .dot::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--bg); }
+  .btn-next { width:100%; margin-top:24px; padding:16px; background:var(--accent); color:var(--bg); border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s ease; display:none; }
+  .btn-next:hover { background:#00ffb3; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,229,160,0.3); }
+  .btn-next.show { display:block; }
+  /* Intro */
+  .intro { text-align:center; padding:20px 0; }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,229,160,0.08); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); margin-bottom:28px; }
+  .intro h1 { font-family:'DM Serif Display',serif; font-size:36px; line-height:1.2; margin-bottom:16px; }
+  .intro h1 em { font-style:italic; color:var(--accent); }
+  .intro p { font-size:16px; line-height:1.7; color:var(--text-muted); margin-bottom:36px; max-width:480px; margin-left:auto; margin-right:auto; }
+  .stats { display:flex; justify-content:center; gap:32px; margin-bottom:40px; }
+  .stat { text-align:center; }
+  .stat-n { font-family:'DM Serif Display',serif; font-size:28px; color:var(--accent); }
+  .stat-l { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .btn-start { display:inline-flex; align-items:center; gap:10px; padding:18px 40px; background:var(--accent); color:var(--bg); border:none; border-radius:14px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+  .btn-start:hover { background:#00ffb3; transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,229,160,0.3); }
+  .disclaimer { margin-top:20px; font-size:12px; color:var(--text-muted); }
+  /* Email */
+  .email-s { text-align:center; }
+  .email-icon { width:64px; height:64px; margin:0 auto 24px; background:rgba(0,229,160,0.08); border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .email-s h2 { font-family:'DM Serif Display',serif; font-size:28px; margin-bottom:12px; }
+  .email-s p { font-size:15px; color:var(--text-muted); margin-bottom:28px; line-height:1.6; }
+  .email-inp { width:100%; padding:16px 18px; background:var(--surface2); border:1px solid var(--border); border-radius:12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
+  .email-inp:focus { border-color:var(--accent); }
+  .email-inp::placeholder { color:var(--text-muted); }
+  .btn-reveal { width:100%; padding:16px; background:var(--accent); color:var(--bg); border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+  .btn-reveal:hover { background:#00ffb3; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,229,160,0.3); }
+  .skip { display:block; margin-top:14px; font-size:13px; color:var(--text-muted); cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  /* Result */
+  .result-s { text-align:center; }
+  .r-badge { display:inline-block; padding:6px 16px; border-radius:20px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; font-weight:500; margin-bottom:20px; }
+  .pa .r-badge { background:rgba(0,229,160,0.12); color:var(--accent); border:1px solid rgba(0,229,160,0.3); }
+  .pb .r-badge { background:rgba(0,184,212,0.12); color:var(--accent2); border:1px solid rgba(0,184,212,0.3); }
+  .pc .r-badge { background:rgba(124,58,237,0.12); color:#a78bfa; border:1px solid rgba(124,58,237,0.3); }
+  .r-title { font-family:'DM Serif Display',serif; font-size:32px; line-height:1.2; margin-bottom:8px; }
+  .r-sub { font-size:14px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:20px; }
+  .insight-block { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:20px; text-align:left; }
+  .ib-title { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+  .ib-item { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); font-size:14px; line-height:1.5; color:var(--text); }
+  .ib-item:last-child { border-bottom:none; }
+  .ib-dot { font-size:16px; margin-top:1px; flex-shrink:0; }
+  .r-desc { font-size:15px; line-height:1.75; color:var(--text-muted); margin-bottom:24px; text-align:left; background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:22px 20px; }
+  .r-steps { text-align:left; margin-bottom:28px; }
+  .rs-title { font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
+  .step { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); }
+  .step:last-child { border-bottom:none; }
+  .sn { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; margin-top:1px; }
+  .pa .sn { background:rgba(0,229,160,0.12); color:var(--accent); }
+  .pb .sn { background:rgba(0,184,212,0.12); color:var(--accent2); }
+  .pc .sn { background:rgba(124,58,237,0.12); color:#a78bfa; }
+  .st { font-size:14px; line-height:1.55; color:var(--text); }
+  .st strong { color:var(--text); font-weight:500; }
+  .st span { color:var(--text-muted); font-size:13px; display:block; margin-top:2px; }
+  .btn-share { width:100%; padding:16px; background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s ease; margin-bottom:10px; }
+  .btn-share:hover { background:rgba(0,229,160,0.08); }
+  .r-footer { font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .screen { display:none; }
+  .screen.active { display:block; }
+  .fade-in { animation:fadeUp 0.45s ease forwards; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="17" stroke="rgba(0,229,160,0.3)" stroke-width="1"/>
+      <circle cx="18" cy="18" r="6" fill="none" stroke="#00e5a0" stroke-width="1.5"/>
+      <circle cx="18" cy="8" r="2.5" fill="#00e5a0" opacity="0.8"/>
+      <circle cx="18" cy="28" r="2.5" fill="#00e5a0" opacity="0.4"/>
+      <circle cx="8" cy="18" r="2.5" fill="#00b8d4" opacity="0.6"/>
+      <circle cx="28" cy="18" r="2.5" fill="#00b8d4" opacity="0.6"/>
+      <line x1="18" y1="10.5" x2="18" y2="12" stroke="#00e5a0" stroke-width="1" opacity="0.5"/>
+      <line x1="18" y1="24" x2="18" y2="25.5" stroke="#00e5a0" stroke-width="1" opacity="0.3"/>
+      <line x1="10.5" y1="18" x2="12" y2="18" stroke="#00b8d4" stroke-width="1" opacity="0.5"/>
+      <line x1="24" y1="18" x2="25.5" y2="18" stroke="#00b8d4" stroke-width="1" opacity="0.5"/>
+    </svg>
+    <span class="brand-name">BIOSYS</span>
+  </div>
+
+  <div id="s-intro" class="screen active">
+    <div class="card fade-in">
+      <div class="intro">
+        <div class="badge"><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg> Free Research Tool</div>
+        <h1>Find Your<br><em>Natural Reset</em><br>Protocol</h1>
+        <p>Your body already knows how to heal itself. Answer 7 questions and discover which natural mechanism works best for <em>your specific situation</em> — backed by research.</p>
+        <div class="stats">
+          <div class="stat"><div class="stat-n">7</div><div class="stat-l">Questions</div></div>
+          <div class="stat"><div class="stat-n">3</div><div class="stat-l">Protocols</div></div>
+          <div class="stat"><div class="stat-n">2<span style="font-size:18px">min</span></div><div class="stat-l">To complete</div></div>
+        </div>
+        <button class="btn-start" onclick="startQuiz()">Find My Protocol <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <p class="disclaimer">No products. No agenda. Just findings. 🔬</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-quiz" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="prog-txt">Question 1 of 7</span><span id="prog-pct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card fade-in" id="q-card">
+      <div class="q-num" id="q-num">Question 1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="q-opts"></div>
+      <button class="btn-next" id="btn-next" onclick="next()">Continue →</button>
+    </div>
+  </div>
+
+  <div id="s-email" class="screen">
+    <div class="card fade-in">
+      <div class="email-s">
+        <div class="email-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 8l10 7 10-7M4 8h20v14H4V8z" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2>Your protocol is ready</h2>
+        <p>Enter your email to receive your personalized Natural Reset Protocol — plus the full research breakdown. Free, no spam.</p>
+        <input type="email" class="email-inp" id="email-inp" placeholder="your@email.com" />
+        <button class="btn-reveal" onclick="showResult()">Show My Protocol →</button>
+        <span class="skip" onclick="showResult()">Skip, just show my result</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-result" class="screen">
+    <div class="card fade-in" id="r-card"></div>
+  </div>
+
+</div>
+<script>
+const Qs = [
+  { id:'concern', text:"What is your main concern right now?", opts:[
+    {t:"My skin needs improvement", tags:['skin'], score:1},
+    {t:"I want to lose weight naturally", tags:['weight'], score:1},
+    {t:"I have low energy all the time", tags:['energy'], score:1},
+    {t:"All of the above", tags:['skin','weight','energy'], score:2}
+  ]},
+  { id:'eat_time', text:"What time do you usually eat your first meal of the day?", opts:[
+    {t:"Before 8am", tags:['early_eater'], score:0},
+    {t:"Between 8am and 10am", tags:[], score:1},
+    {t:"Between 10am and 12pm", tags:['natural_faster'], score:2},
+    {t:"After 12pm", tags:['natural_faster','already_fasting'], score:3}
+  ]},
+  { id:'sleep', text:"How many hours of sleep do you usually get each night?", opts:[
+    {t:"Less than 5 hours", tags:['poor_sleep'], score:3},
+    {t:"5 to 6 hours", tags:['poor_sleep'], score:2},
+    {t:"7 to 8 hours", tags:['good_sleep'], score:0},
+    {t:"More than 8 hours but still tired", tags:['poor_sleep'], score:1}
+  ]},
+  { id:'skin_desc', text:"How would you describe your skin right now?", opts:[
+    {t:"Dull and tired looking", tags:['dull_skin'], score:2},
+    {t:"Breakouts and acne", tags:['acne'], score:2},
+    {t:"Uneven tone and texture", tags:['uneven_skin'], score:1},
+    {t:"Generally okay but could be better", tags:['okay_skin'], score:0}
+  ]},
+  { id:'morning', text:"How do you feel most mornings when you wake up?", opts:[
+    {t:"Exhausted even after sleeping", tags:['fatigued'], score:3},
+    {t:"Slow to start, need coffee to function", tags:['sluggish'], score:2},
+    {t:"Decent but crash hard in the afternoon", tags:['afternoon_crash'], score:1},
+    {t:"Generally good and clear headed", tags:['good_energy'], score:0}
+  ]},
+  { id:'eat_pattern', text:"How would you describe your current eating pattern?", opts:[
+    {t:"I eat from morning until night constantly", tags:['grazer'], score:3},
+    {t:"Three regular meals every day", tags:['regular'], score:1},
+    {t:"I skip meals sometimes without planning", tags:['irregular'], score:1},
+    {t:"I already do some form of fasting", tags:['already_fasting'], score:0}
+  ]},
+  { id:'struggle', text:"What feels hardest for you right now?", opts:[
+    {t:"Controlling cravings and hunger", tags:['cravings'], score:2},
+    {t:"Being consistent with healthy habits", tags:['consistency'], score:1},
+    {t:"Knowing what actually works for my body", tags:['knowledge'], score:1},
+    {t:"Finding something natural that is safe", tags:['safety'], score:0}
+  ]}
+];
+
+let cur=0, answers=[], tags=[], score=0, sel=-1;
+
+function has(t){return tags.includes(t);}
+
+function startQuiz(){show('s-quiz');renderQ();}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQ(){
+  const q=Qs[cur];
+  const pct=Math.round((cur/Qs.length)*100);
+  document.getElementById('prog-txt').textContent=`Question ${cur+1} of ${Qs.length}`;
+  document.getElementById('prog-pct').textContent=`${pct}%`;
+  document.getElementById('prog-fill').style.width=`${pct}%`;
+  document.getElementById('q-num').textContent=`Question ${cur+1}`;
+  document.getElementById('q-text').textContent=q.text;
+  const card=document.getElementById('q-card');
+  card.style.animation='none'; void card.offsetWidth; card.style.animation='fadeUp 0.4s ease forwards';
+  const wrap=document.getElementById('q-opts');
+  wrap.innerHTML=''; sel=-1;
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='option';
+    b.innerHTML=`<span class="dot"></span>${o.t}`;
+    b.onclick=()=>pick(i);
+    wrap.appendChild(b);
+  });
+  document.getElementById('btn-next').classList.remove('show');
+}
+
+function pick(i){
+  sel=i;
+  document.querySelectorAll('.option').forEach((o,j)=>o.classList.toggle('selected',j===i));
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function next(){
+  if(sel<0)return;
+  const o=Qs[cur].opts[sel];
+  answers.push({qid:Qs[cur].id, i:sel, o});
+  score+=(o.score||0);
+  (o.tags||[]).forEach(t=>{if(!tags.includes(t))tags.push(t);});
+  cur++;
+  if(cur<Qs.length)renderQ();
+  else show('s-email');
+}
+
+function getLevel(){
+  if(score<=4)return'A';
+  if(score<=9)return'B';
+  return'C';
+}
+
+function buildInsights(){
+  const out=[];
+  if(has('skin'))out.push({e:'🌿',t:'Your skin concern is directly linked to cellular renewal — autophagy clears the dead cells causing dullness and breakouts naturally.'});
+  if(has('weight'))out.push({e:'🔥',t:'Your weight goal activates when insulin clears. A fasting window is the direct trigger — no drugs, no supplements needed.'});
+  if(has('energy'))out.push({e:'⚡',t:'Your low energy is your body signalling it is overwhelmed processing food. A reset window gives it space to clean and recharge.'});
+  if(has('poor_sleep'))out.push({e:'🌙',t:'Your poor sleep is blocking cellular repair. Growth hormone — which repairs skin and burns fat — only releases when you sleep before 10pm.'});
+  if(has('good_sleep'))out.push({e:'✓',t:'Your sleep foundation is solid. This makes your reset protocol significantly more effective from day one.'});
+  if(has('acne'))out.push({e:'🔬',t:'Acne is often internal inflammation signalling through the skin. Fasting and chlorophyll address the root cause — not the surface.'});
+  if(has('dull_skin'))out.push({e:'🔬',t:'Dull skin means dead cells are not clearing fast enough. Autophagy is your body\'s free built-in answer to this exact problem.'});
+  if(has('fatigued'))out.push({e:'⚠️',t:'Waking exhausted means your body spends its repair energy on digestion overnight. An earlier eating cutoff changes everything.'});
+  if(has('afternoon_crash'))out.push({e:'⚡',t:'Afternoon crashes are blood sugar spikes followed by drops. A structured eating window eliminates this cycle naturally.'});
+  if(has('grazer'))out.push({e:'⏱️',t:'Eating all day keeps insulin elevated constantly — your body never receives the cellular cleanup signal it is waiting for.'});
+  if(has('already_fasting'))out.push({e:'✓',t:'You already fast naturally. Your protocol builds on what your body is already doing and deepens it for better results.'});
+  if(has('cravings'))out.push({e:'💡',t:'Cravings are strongest in the first 3 days of a fasting window. After that your body adapts and hunger normalises significantly.'});
+  return out.slice(0,4);
+}
+
+function buildDesc(lvl){
+  const concerns=[];
+  if(has('skin')||has('acne')||has('dull_skin'))concerns.push('skin renewal');
+  if(has('weight'))concerns.push('natural weight loss');
+  if(has('energy')||has('fatigued'))concerns.push('energy restoration');
+  if(has('poor_sleep'))concerns.push('sleep quality');
+  const focus=concerns.length?`Based on your answers, your body most needs ${concerns.join(', ')}.`:'Based on your answers, your body is ready for a natural reset.';
+  const d={
+    A:`${focus} Your body does not need an overhaul — it needs permission to start. Small consistent shifts in your eating window will activate your body's natural repair systems. ${has('already_fasting')?'You already have some fasting instinct — now make it intentional.':'A 12-hour window is the safest, most natural entry point.'} The results will come quietly but noticeably within two weeks.`,
+    B:`${focus} Your body is primed for a deeper reset. ${has('already_fasting')?'You already fast instinctively — now structure it.':'A 16-hour fasting window is your unlock.'} ${has('poor_sleep')?'Your sleep is the hidden blocker — fix this first and everything else accelerates.':''} When your eating window, sleep and natural tools work together — your skin, energy and weight shift faster than any product could achieve.`,
+    C:`${focus} Your body is asking for a complete system reset. ${has('fatigued')?'Your exhaustion is not laziness — it is your body running on empty because it never gets a real repair window.':''} Every system needs to work together: cellular cleanup through fasting, gut cleansing, skin repair from inside and outside simultaneously. This is not extreme. This is what your body has been trying to do — you just need to stop interrupting it.`
+  };
+  return d[lvl];
+}
+
+function buildSteps(lvl){
+  const base={
+    A:[
+      {h:"Start with a 12-hour eating window",d:"Stop eating at 8pm. Don't eat again until 8am. The simplest reset your body can do."},
+      {h:"Fix your sleep schedule first",d:"Sleep is when your cells repair. Aim for 7 hours minimum, same time every night."},
+      {h:"Add chlorophyll to your morning water",d:"A few drops in water every morning. Internal cleansing starts here."},
+      {h:"Observe your skin in 2 weeks",d:"Before buying any new skincare — give your body this window first and watch what happens."}
+    ],
+    B:[
+      {h:"16-hour fasting window",d:"Eat between 12pm and 8pm only. This is where autophagy properly activates."},
+      {h:"Red light therapy 3x per week",d:"10 minutes on face and neck. Stimulates collagen and cellular repair from the outside."},
+      {h:"Psyllium husk before your first meal",d:"In water before eating. Clears your gut — and a clear gut directly clears your skin."},
+      {h:"Sleep cutoff at 10pm",d:"Growth hormone releases between 10pm and 2am. Missing this window means missing your body's nightly repair shift."}
+    ],
+    C:[
+      {h:"18-hour fasting window",d:"Eat between 2pm and 8pm. Deep autophagy. Your cells clean themselves completely."},
+      {h:"Red light therapy daily",d:"Morning on face. Evening on body. Cellular regeneration working at full capacity."},
+      {h:"Chlorophyll and psyllium husk together",d:"Morning: chlorophyll water. Before first meal: psyllium husk. Blood and gut cleared simultaneously."},
+      {h:"Sleep and magnesium protocol",d:"Magnesium glycinate before bed. Consistent 10pm sleep. Your body rebuilds every single night."},
+      {h:"Snail slime serum externally",d:"Apply after washing face at night. Cellular regeneration from outside while fasting repairs from within."}
+    ]
+  };
+  const steps=[...base[lvl]];
+  // Personalise steps
+  if(lvl==='A'&&has('acne'))steps[2].d="Chlorophyll is anti-inflammatory and antibacterial in the gut. For acne specifically this is one of the most powerful internal tools available.";
+  if(lvl==='B'&&has('weight'))steps[0].d="Eat between 12pm and 8pm. After 12-14 hours fasted your body switches from burning food to burning stored fat. This is where your weight goal activates.";
+  if(lvl==='B'&&has('poor_sleep'))steps[3].d="For you specifically sleep is priority number one. Growth hormone that repairs skin, burns fat and restores energy only releases when you sleep before 10pm consistently.";
+  if(lvl==='C'&&has('fatigued'))steps[3].d="Magnesium glycinate before bed is critical for your exhaustion. It calms your nervous system, improves sleep depth and directly impacts your morning energy levels.";
+  if(lvl==='B'&&has('dull_skin'))steps[1].d="Red light therapy directly stimulates collagen production and accelerates the cellular turnover that makes dull skin glow again. Use consistently for 3 weeks minimum.";
+  if(lvl==='A'&&has('energy'))steps[1].d="For your energy specifically — sleep quality matters more than sleep quantity. Same bedtime every night resets your circadian rhythm and restores natural energy within days.";
+  return steps;
+}
+
+function showResult(){
+  const lvl=getLevel();
+  const insights=buildInsights();
+  const steps=buildSteps(lvl);
+  const desc=buildDesc(lvl);
+  const meta={
+    A:{lbl:'Protocol A',name:'The Gentle Reset',sub:'Your Starting Point',cls:'pa'},
+    B:{lbl:'Protocol B',name:'The Active Reset',sub:'Deeper Optimization',cls:'pb'},
+    C:{lbl:'Protocol C',name:'The Full System Reset',sub:'Complete Natural Transformation',cls:'pc'}
+  };
+  const m=meta[lvl];
+  const insHTML=insights.length?`<div class="insight-block"><div class="ib-title">What your answers reveal about your body</div>${insights.map(i=>`<div class="ib-item"><span class="ib-dot">${i.e}</span><span>${i.t}</span></div>`).join('')}</div>`:'';
+  document.getElementById('r-card').className=`card fade-in result-s ${m.cls}`;
+  document.getElementById('r-card').innerHTML=`
+    <div class="result-s">
+      <div class="r-badge">${m.lbl}</div>
+      <h2 class="r-title">${m.name}</h2>
+      <p class="r-sub">${m.sub}</p>
+      ${insHTML}
+      <div class="r-desc">${desc}</div>
+      <div class="r-steps">
+        <div class="rs-title">Your personalized protocol steps</div>
+        ${steps.map((s,i)=>`<div class="step"><div class="sn">${i+1}</div><div class="st"><strong>${s.h}</strong><span>${s.d}</span></div></div>`).join('')}
+      </div>
+      <button class="btn-share" onclick="share('${m.name}')">Share My Result</button>
+      <div class="r-footer">This is for informational purposes only. Always consult a health professional before making changes to your diet or routine. — <strong>@Biosys</strong> | No products. No agenda. Just findings. 🔬</div>
+    </div>`;
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-txt').textContent='Complete';
+  document.getElementById('prog-pct').textContent='100%';
+  show('s-result');
+}
+
+function share(name){
+  const t=`I just found my Natural Reset Protocol: "${name}" 🔬\n\nMy body has been trying to heal itself. I just needed to stop interrupting it.\n\nFind your free protocol → biosys.vercel.app\n\n@Biosys #NaturalReset #Autophagy #Biosys`;
+  if(navigator.share)navigator.share({title:'My Natural Reset Protocol — Biosys',text:t});
+  else navigator.clipboard.writeText(t).then(()=>alert('Copied to clipboard! Share on X or Instagram.'));
+}
+</script>
+</body>
+</html>
